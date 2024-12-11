@@ -5,8 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "Kateryna_Voytenko <katyaukr2014@gmail.com>",
