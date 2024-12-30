@@ -2,35 +2,41 @@ import Contacts from '../db/models/Contacts.js';
 import { calcPaginationData } from '../utils/calcPaginationData.js';
 
 export const getContacts = async ({
-  page = 1,
- perPage = 10, 
- sortBy="name",
- sortOrder="asc", 
- filter={},
+  page,
+  perPage,
+  sortBy = '_id',
+  sortOrder = 'asc',
+  filter = {},
 }) => {
-const limit=perPage;
-const skip=(page - 1) * limit;
-const contactsQuery= Contacts.find();
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+  const contactsQuery = Contacts.find();
 
-if(filter.type){
-  contactsQuery.where("contactType").equals(filter.type);
-}
-if(filter.isFavourite !==undefined){
-  contactsQuery.where("isFavourite").equals(filter.isFavourite);
-}
+  if (filter.type) {
+    contactsQuery.where('contactType').equals(filter.type);
+  }
+  if (filter.isFavourite !== undefined) {
+    contactsQuery
+      .where('isFavourite')
+      .equals(filter.isFavourite === true || filter.isFavourite === 'true');
+  }
+  const totalItems = await Contacts.find()
+    .merge(contactsQuery)
+    .countDocuments();
+  const items = await contactsQuery
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder })
+    .exec();
 
-  const items= await contactsQuery.skip(skip).limit(limit).sort({[sortBy]:sortOrder});
-
-  const totalItems =await Contacts.find().merge(contactsQuery).countDocuments();
-  const paginationData=calcPaginationData({totalItems,page,perPage});
-  return{
-    items,
-    totalItems,
+  const paginationData = calcPaginationData({ totalItems, page, perPage });
+  return {
+    data: items,
     ...paginationData,
   };
 };
 
-export const getContactById = (id) => Contacts.findById(id);
+export const getContactById = (contactId) => Contacts.findById(contactId);
 
 export const createContact = (contactData) => Contacts.create(contactData);
 
