@@ -29,6 +29,9 @@ const contactSchema = new Schema(
       ref: 'user',
       required: true,
     },
+    poster: {
+      type: String,
+    },
   },
   {
     timestamps: true,
