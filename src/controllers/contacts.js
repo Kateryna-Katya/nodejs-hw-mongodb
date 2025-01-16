@@ -61,7 +61,7 @@ export const deleteConatctController = async (req, res) => {
 };
 
 export const createContactController = async (req, res) => {
-  const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === true;
+  const cloudinaryEnable = getEnvVar('CLOUDINARY_ENABLE') === 'true';
   let poster;
   if (req.file) {
     if (cloudinaryEnable) {

@@ -6,7 +6,7 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
   authRegisterSchema,
   authLoginSchema,
-  resetEmailSchema,
+  requestResetEmailSchema,
   resetPasswordSchema,
 } from '../validation/auth.js';
 import * as authController from '../controllers/auth.js';
@@ -24,8 +24,8 @@ authRouter.post(
 );
 authRouter.post(
   '/send-reset-email',
-  validateBody(resetEmailSchema),
-  ctrlWrapper(authController.resetEmailController),
+  validateBody(requestResetEmailSchema),
+  ctrlWrapper(authController.requestresetEmailController),
 );
 
 authRouter.post(

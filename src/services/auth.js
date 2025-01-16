@@ -6,8 +6,8 @@ import { Session } from '../db/models/Session.js';
 import {
   accessTokenLifetime,
   refreshTokenLifetime,
-  SMTP,
 } from '../constants/user.js';
+import { SMTP } from '../constants/index.js';
 import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { getEnvVar } from '../utils/getEnvVar.js';
@@ -73,22 +73,28 @@ export const logout = async (sessionId) => {
 export const getUser = (filter) => User.findOne(filter);
 export const getSession = (filter) => Session.findOne(filter);
 
-export const resetToken = async (email) => {
+export const requestResetToken = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw createHttpError(404, 'User not found');
   }
-  const token = jwt.sign({ email }, process.env.getEnvVar('JWT_SECRET'), {
-    expiresIn: '5m',
-  });
-  const resetLink = `${process.env.getEnvVar(
-    'APP_DOMAIN',
-  )}/reset-password?token=${token}`;
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email,
+    },
+    getEnvVar('JWT_SECRET'),
+    {
+      expiresIn: '15m',
+    },
+  );
   await sendMail({
     from: getEnvVar(SMTP.SMTP_FROM),
     to: email,
     subject: 'Reset your password',
-    text: `Click the link to reset your password: ${resetLink}`,
+    html: `<p>Click <a href="${getEnvVar(
+      'APP_DOMAIN',
+    )}/reset-password?token=${resetToken}">here</a> to reset your password!</p>`,
   });
 };
 
@@ -97,13 +103,14 @@ export const resetPassword = async (payload) => {
 
   try {
     entries = jwt.verify(payload.token, getEnvVar('JWT_SECRET'));
-  } catch {
-    throw createHttpError(401, 'Token is expired or invalid.');
+  } catch (error) {
+    if (error instanceof Error) throw createHttpError(401, 'error.message');
+    throw error;
   }
 
   const user = await User.findOne({
-    _id: entries.sub,
     email: entries.email,
+    _id: entries.sub,
   });
 
   if (!user) {

@@ -53,8 +53,8 @@ export const logoutController = async (req, res) => {
 
   res.status(204).send();
 };
-export const resetEmailController = async (req, res) => {
-  await authServices.resetToken(req.body.email);
+export const requestresetEmailController = async (req, res) => {
+  await authServices.requestResetToken(req.body.email);
   res.json({
     status: 200,
     message: 'Reset password email has been successfully sent.',

@@ -13,7 +13,7 @@ cloudinary.config({
 });
 
 export const saveFileToCloudinary = async (file) => {
-  const response = cloudinary.uploader.upload(file.path, {
+  const response = await cloudinary.uploader.upload(file.path, {
     folder: 'posters',
   });
   await unlink(file.path);

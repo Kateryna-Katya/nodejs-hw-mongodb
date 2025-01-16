@@ -22,6 +22,11 @@ const userSchema = new Schema(
     versionKey: false,
   },
 );
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 
 userSchema.post('save', handleSaveError);
 userSchema.post('findOneAndUpdate', handleSaveError);
