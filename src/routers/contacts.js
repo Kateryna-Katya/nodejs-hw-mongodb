@@ -2,7 +2,7 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { Router } from 'express';
 
 import { authenticate } from '../middlewares/authenticate.js';
-import { upload } from '../middlewares/upload.js';
+import { upload } from '../middlewares/multer.js';
 
 import {
   createContactController,
@@ -23,13 +23,14 @@ router.get('/', ctrlWrapper(getAllContactsController));
 router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 router.post(
   '/',
-  upload.single('poster'),
+  upload.single('photo'),
   validateBody(contactAddSchema),
   ctrlWrapper(createContactController),
 );
 router.patch(
   '/:contactId',
   isValidId,
+  upload.single('photo'),
   validateBody(updateContactSchema),
   ctrlWrapper(updateContactController),
 );

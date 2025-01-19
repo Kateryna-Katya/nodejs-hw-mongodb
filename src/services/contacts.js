@@ -44,10 +44,36 @@ export const getContactById = (contactId, userId) =>
 export const getContactByFilter = (filter) => Contacts.findOne(filter);
 export const createContact = (contactData) => Contacts.create(contactData);
 
-export const updateContact = (contactId, userId, contactData) =>
-  Contacts.findOneAndUpdate({ _id: contactId, userId }, contactData, {
-    new: true,
-  });
+export const updateContact = async (
+  contactId,
+  userId,
+  contact,
+  photo,
+  options = {},
+) => {
+  const result = await Contacts.findOneAndUpdate(
+    {
+      _id: contactId,
+      userId,
+    },
+    {
+      ...contact,
+      photo,
+    },
+    {
+      new: true,
+      includeResultMetadata: true,
+      ...options,
+    },
+  );
+
+  if (!result || !result.value) return null;
+
+  return {
+    contact: result.value,
+    isNew: Boolean(result?.lastErrorObject?.upserted),
+  };
+};
 
 export const deleteContact = (contactId, userId) =>
   Contacts.findOneAndDelete({ _id: contactId, userId });
