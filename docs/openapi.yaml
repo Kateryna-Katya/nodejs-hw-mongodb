@@ -12,7 +12,7 @@ tags:
 
 servers:
   - url: http://localhost:3000
-  - url: https://nodejs-hw-mongodb-6-jnkf.onrender.com
+  - url: https://nodejs-hw-mongodb-7-mke2.onrender.com
 paths:
   /contacts:
     get:
